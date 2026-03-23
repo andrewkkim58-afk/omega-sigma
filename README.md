@@ -1,4 +1,4 @@
-# $\Omega$--$\Sigma$ Engine: Variance-Dominated Cascade Arrest
+# Ω-Σ Engine: Variance-Dominated Cascade Arrest
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Framework: JAX / PyTorch](https://img.shields.io/badge/Framework-JAX%20%7C%20PyTorch-orange)](#)
