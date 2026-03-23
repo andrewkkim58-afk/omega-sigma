@@ -11,14 +11,14 @@ A mathematically guaranteed, physics-informed constraint layer for preventing au
 State-of-the-art neural simulators (e.g., weather prediction like GraphCast, MHD containment models) frequently fail during deep autoregressive rollouts. As microscopic errors accumulate, the network misaligns transport vectors, hallucinating unphysical energy cascades into high-frequency spatial scales, eventually crashing the simulation.
 
 ## The Solution
-The $\Omega$--$\Sigma$ Engine replaces heuristic PDE residuals with a hard geometric bound derived from trace-class operator theory. By evaluating the thermodynamic free energy of the dyadic shell decomposition, it applies a **Variance Penalty** that forces the network's weights into a strictly subcritical, viscous regime. 
+The Ω-Σ Engine replaces heuristic PDE residuals with a hard geometric bound derived from trace-class operator theory. By evaluating the thermodynamic free energy of the dyadic shell decomposition, it applies a **Variance Penalty** that forces the network's weights into a strictly subcritical, viscous regime. 
 
 If the AI attempts to violate the Kolmogorov barrier, the variance penalty algebraically dominates the loss landscape, aggressively correcting the rollout before a singularity forms.
 
 ### Simulation Proof
 The plots below demonstrate the real-time execution of `run_cascade_comparison.py`. 
 * **Red (Unconstrained):** The baseline neural rollout hallucinates an ultraviolet cascade and breaches the energy boundary.
-* **Cyan ($\Omega$--$\Sigma$ Constrained):** The variance penalty triggers, permanently locking the system into a mathematically stable, subcritical state.
+* **Cyan (Ω-Σ Constrained):** The variance penalty triggers, permanently locking the system into a mathematically stable, subcritical state.
 
 ![Variance History](data/variance_history.png)
 ![Exponential Tail](data/exponential_tail.png)
