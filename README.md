@@ -15,13 +15,23 @@ The Ω-Σ Engine replaces heuristic PDE residuals with a hard geometric bound de
 
 If the AI attempts to violate the Kolmogorov barrier, the variance penalty algebraically dominates the loss landscape, aggressively correcting the rollout before a singularity forms.
 
-### Simulation Proof
-The plots below demonstrate the real-time execution of `run_cascade_comparison.py`. 
-* **Red (Unconstrained):** The baseline neural rollout hallucinates an ultraviolet cascade and breaches the energy boundary.
-* **Cyan (Ω-Σ Constrained):** The variance penalty triggers, permanently locking the system into a mathematically stable, subcritical state.
+## Simulation Proof
 
-![Variance History](data/variance_history.png)
-![Exponential Tail](data/exponential_tail.png)
+The animation and plots below demonstrate the real-time execution of the dyadic shell model via `run_demo.py`. 
+
+* **Cyan (Unconstrained Baseline):** The neural rollout hallucinates an ultraviolet cascade, breaching the energy boundary and pooling catastrophic mass in the high-frequency shells.
+* **Yellow (Ω-Σ Constrained):** The variance penalty triggers immediately, aggressively damping the hallucination and locking the system into a mathematically stable Kolmogorov decay.
+
+![Cascade Animation](data/cascade_demo.gif)
+
+### Mathematical Arrest Metrics
+```text
+Peak tail mass (baseline):     0.329599
+Peak tail mass (Ω-Σ):          0.002993
+Tail suppression:              99.09%
+
+Integrated tail suppression:   99.92%
+Final variance reduction:      99.92%
 
 ## Quick Start (JAX Implementation Blueprint)
 
