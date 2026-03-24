@@ -77,9 +77,10 @@ def simulate_cascade(apply_omega_sigma_constraint=False):
         # Ω-Σ Controller
         # -------------------------------
         effective_nu = NU
-        if apply_omega_sigma_constraint and variance > VAR_LIMIT:
-            effective_nu = NU * 40.0
-
+        if apply_omega_sigma_constraint:
+           ratio = variance / VAR_LIMIT
+           effective_nu = NU * (1.0 + 40.0 / (1.0 + np.exp(-8.0 * (ratio - 1.0)))) 
+        
         # -------------------------------
         # Dissipation
         # -------------------------------
@@ -188,5 +189,67 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.savefig("data/final_spectrum.png", dpi=300)
     plt.close()
+    
+    # =====================================================
+    # 6. ANIMATION
+    # =====================================================
+    print("Rendering GIF animation (this takes ~10 seconds)...")
 
-    print("Done. Check /data folder.")
+    # Freeze the final frame so viewers can inspect the terminal state
+    hold_frames = 75
+    base_a_anim = np.concatenate([base_a, np.repeat(base_a[-1][None, :], hold_frames, axis=0)], axis=0)
+    cons_a_anim = np.concatenate([cons_a, np.repeat(cons_a[-1][None, :], hold_frames, axis=0)], axis=0)
+
+    fig4, (ax_base, ax_cons) = plt.subplots(1, 2, figsize=(12, 5))
+    fig4.patch.set_facecolor("black")
+
+    def init_ax(ax, title, color):
+        ax.set_title(title, fontweight='bold')
+        ax.set_facecolor("black")
+        ax.set_ylim(1e-16, 10.0)
+        ax.set_xlim(-0.6, N_SHELLS - 0.4)
+        ax.set_yscale('log')
+        ax.set_xlabel("Shell Index $q$")
+        ax.set_ylabel("Energy $a_q$")
+        ax.grid(True, which="both", axis="y", alpha=0.15, linestyle="--")
+        bars = ax.bar(shells, np.full(N_SHELLS, 1e-16), color=color, alpha=0.85, width=0.8)
+        return bars
+
+    bars_base = init_ax(ax_base, "Baseline (Hallucination)", '#81D4FA')  # Cyan
+    bars_cons = init_ax(ax_cons, "Ω-Σ Engine (Stable)", '#FFF59D')       # Yellow
+
+    time_text = fig4.text(
+        0.5, 0.02, "",
+        ha="center", va="bottom",
+        color="white", fontsize=11
+    )
+
+    def update(frame):
+        for bar, h in zip(bars_base, base_a_anim[frame]):
+            bar.set_height(max(float(h), 1e-16))
+
+        for bar, h in zip(bars_cons, cons_a_anim[frame]):
+            bar.set_height(max(float(h), 1e-16))
+
+        if frame < len(base_a):
+            t_val = frame * DT * 25.0
+            time_text.set_text(f"t = {t_val:.4f}")
+        else:
+            time_text.set_text("Final state (held)")
+
+        return list(bars_base) + list(bars_cons) + [time_text]
+
+    ani = animation.FuncAnimation(
+        fig4,
+        update,
+        frames=len(base_a_anim),
+        interval=25,
+        blit=True,
+        repeat=False
+    )
+
+    plt.tight_layout(rect=[0, 0.05, 1, 1])
+    ani.save("data/cascade_demo.gif", writer="pillow", fps=24)
+    plt.close(fig4)
+    
+    print("GIF rendered successfully! Check the /data folder.")
